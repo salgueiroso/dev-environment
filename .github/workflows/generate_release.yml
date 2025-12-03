@@ -1,0 +1,24 @@
+name: Releases
+
+on: 
+  push:
+    tags:
+      - '*'
+
+jobs:
+
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+    - uses: actions/checkout@v4
+    - name: Create tar.gz file
+      run: |
+        tar -czvf "environment-release-${{ github.ref }}.tar.gz" *.sh
+    - uses: ncipollo/release-action@v1
+      with:
+        artifacts: "*.tar.gz"
+        bodyFile: "release.md"
+        tag: ${{ github.ref }}
+        name: Release ${{ github.ref }}
