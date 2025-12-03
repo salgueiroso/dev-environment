@@ -15,7 +15,10 @@ jobs:
       contents: write
     steps:
     - name: BRANCH_NAME normalization
-      run: echo "BRANCH_NAME=${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV
+      run: |
+        BRANCH_NAME=${GITHUB_REF#refs/heads/}
+        BRANCH_NAME=${BRANCH_NAME#refs/tags/}
+        echo "BRANCH_NAME=${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV
 
     - uses: actions/checkout@v4
 
