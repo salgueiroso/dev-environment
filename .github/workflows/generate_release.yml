@@ -16,8 +16,10 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: Create tar.gz file
+      env:
+        REF: ${{ github.ref }}
       run: |
-        tar -czvf "environment-release-${{ github.ref }}.tar.gz" *.sh
+        tar -czvf "environment-release-${REF#refs/heads/}.tar.gz" *.sh
     - uses: ncipollo/release-action@v1
       with:
         artifacts: "*.tar.gz"
