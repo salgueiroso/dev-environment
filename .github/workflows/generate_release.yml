@@ -1,6 +1,6 @@
 name: Releases
 
-on: 
+on:
   push:
     tags:
       - '*'
@@ -10,27 +10,25 @@ on:
 jobs:
 
   build:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
+    runs-on: macos-latest
     steps:
-    - name: BRANCH_NAME normalization
-      run: |
-        BRANCH_NAME=${GITHUB_REF#refs/}
-        BRANCH_NAME=${BRANCH_NAME#heads/}
-        BRANCH_NAME=${BRANCH_NAME#tags/}
-        echo "BRANCH_NAME=${BRANCH_NAME}"
-        echo "BRANCH_NAME=${BRANCH_NAME}" >> $GITHUB_ENV
-
+    
     - uses: actions/checkout@v4
 
-    - name: Create tar.gz file
-      run: |
-        tar -czvf "environment-release-${BRANCH_NAME}.tar.gz" *.sh
+    - name: Validação da sintaxe
+      run: ruby -c ./Formula/dev_environment.rb
 
-    - uses: ncipollo/release-action@v1
-      with:
-        artifacts: "*.tar.gz"
-        bodyFile: "release.md"
-        tag: ${{ env.BRANCH_NAME }}
-        name: Release ${{ env.BRANCH_NAME }}
+    - name: Preparando para auditar
+      run: |
+        brew tap-new salgueiroso/dev-environment
+        DIRETORIO=$(brew --repo salgueiroso/dev-environment)
+        cp ./Formula/dev_environment.rb "${DIRETORIO}/Formula/dev_environment.rb"
+
+    - name: Validação da instalação
+      run: brew install --build-from-source --verbose --force salgueiroso/dev-environment/dev_environment
+
+    - name: Validação dos testes
+      run: brew test salgueiroso/dev-environment/dev_environment
+
+    - name: Auditando a instalação
+      run: brew audit --new --strict --online dev_environment
