@@ -16,19 +16,19 @@ jobs:
     - uses: actions/checkout@v4
 
     - name: Validação da sintaxe
-      run: ruby -c ./Formula/dev_environment.rb
+      run: ruby -c ./Formula/dev-environment.rb
 
     - name: Preparando para auditar
       run: |
         brew tap-new salgueiroso/dev-environment
         DIRETORIO=$(brew --repo salgueiroso/dev-environment)
-        cp ./Formula/dev_environment.rb "${DIRETORIO}/Formula/dev_environment.rb"
+        cp ./Formula/dev-environment.rb "${DIRETORIO}/Formula/dev-environment.rb"
 
     - name: Validação da instalação
-      run: brew install --build-from-source --verbose --force salgueiroso/dev-environment/dev_environment
+      run: brew install --build-from-source --verbose --force salgueiroso/dev-environment/dev-environment
 
     - name: Validação dos testes
-      run: brew test salgueiroso/dev-environment/dev_environment
+      run: brew test salgueiroso/dev-environment/dev-environment
 
     - name: Auditando a instalação
-      run: brew audit --new --strict --online dev_environment
+      run: brew audit --new --strict --online dev-environment
